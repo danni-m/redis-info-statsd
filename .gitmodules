@@ -1,0 +1,6 @@
+[submodule "statsd-c-client"]
+	path = statsd-c-client
+	url = https://github.com/romanbsd/statsd-c-client.git
+[submodule "RedisModulesSDK"]
+	path = RedisModulesSDK
+	url = https://github.com/RedisLabs/RedisModulesSDK.git
