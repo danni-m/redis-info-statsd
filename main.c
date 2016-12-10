@@ -53,18 +53,23 @@ void connect_to_server(int port)
 
 int RedisModule_OnLoad(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
     char  *statsd_server = "127.0.0.1";
-    int statsd_server_port = 8125;
+    char *statsd_namespace = "redis";
+    long long statsd_server_port = 8125;
 
     if (RedisModule_Init(ctx,"redis-statsd",1,REDISMODULE_APIVER_1)
         == REDISMODULE_ERR) return REDISMODULE_ERR;
 
-    if (argc != 0) {
-        // TODO: this is currently doesn't work
-        // RMUtil_ParseArgs(argv, argc, 1, "cl", &statsd_server, &statsd_server_port);
-        RM_LOG_WARNING(ctx, "statsd module doesn't support configuration yet");
+    if (argc == 2) {
+        RMUtil_ParseArgs(argv, argc, 0, "cl", &statsd_server, &statsd_server_port);
+    } else if (argc == 3) {
+        RMUtil_ParseArgs(argv, argc, 0, "clc", &statsd_server, &statsd_server_port, &statsd_namespace);
+    }
+    else if (argc != 0 ) {
+        RM_LOG_WARNING(ctx, "statsd configuration: server=%s port=%d", statsd_server, statsd_server_port);
+        return REDISMODULE_ERR;
     }
 
-    statsd_connection = statsd_init_with_namespace(statsd_server, statsd_server_port, "redis");
+    statsd_connection = statsd_init_with_namespace(statsd_server, (int) statsd_server_port, statsd_namespace);
 
     // create an hiredis client, connect the server by parsing the configuration
     RedisModuleCallReply *reply;
