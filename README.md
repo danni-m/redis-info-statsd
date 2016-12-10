@@ -3,15 +3,13 @@ The purpose of this module is to get performance stats from redis.
 
 ## Overview
 The module creates a hiredis client and a statsd client.
+On initialization the module creates another thread that will periodically update the statsd server by running the `info` command and than update all corresponding gauges.
 
 ## known issues
 1. Some `info` parmas are not parsed currectly.
-2. statsd host and port are not configurable
 3. update interval is not configurable
-4. statsd namesapce is not configurable
 
 ## License: AGPL
-Which basically means you can freely use this for your own projects without "virality" to your code, as long as you're not modifying the module itself.
 
 # How to start using?
 ## Compile
@@ -43,4 +41,7 @@ make
 the module should be in your current directory (`bin`) named `libredis_info_statsd.dylib` or `libredis_info_statsd.so`.
 ## load module
 using the loadmodule command, or by configuration file:
-`loadmodule PATH_TO_redis-info-statsd/bin/libredis_info_statsd.dylib`
+`loadmodule PATH_TO_redis-info-statsd/bin/libredis_info_statsd.dylib` 
+### configuration
+By default the module will send the metrics to localhost:8125 using the namespace "redis" you can override it by passing 3 arguments to loadmodule:
+`loadmodule PATH_TO_redis-info-stats/bin/libredis_info_statsd.dylib 172.16.0.2 8125 redis-23`
